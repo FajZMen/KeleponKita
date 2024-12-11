@@ -2,6 +2,8 @@ import streamlit as st
 import PIL as Image
 import pandas as pd
 import datetime
+from random import randint as rng
+from time import sleep as wait
 from Data.Datas import accounts, adminaccounts, superadminaccounts, produk, vouchers, historypesananlist, adminchathistory
 
 def sesi_inisilasi():
@@ -121,6 +123,7 @@ def keranjangfunc():
 
 def historypesanan(emailuser, nohp, alamatuser, metodepembayaran, namaproduk, jumlah, totalharga):
     historypesananlist.append({
+        "ID": rng(100, 999),
         "Tanggal": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "Email": emailuser,
         "No. Hp": nohp,
@@ -130,6 +133,22 @@ def historypesanan(emailuser, nohp, alamatuser, metodepembayaran, namaproduk, ju
         "Total Harga": totalharga,
         "Metode Pembayaran": metodepembayaran
     })
+
+def historydelete():
+    if historypesananlist:
+        historyid = st.number_input("Masukkan ID Pesanan yang akan dihapus", min_value=100, max_value=999)
+        if st.button("Hapus Pesanan"):
+            for hist in historypesananlist:
+                if hist["ID"] == historyid:
+                    historypesananlist.remove(hist)
+                    st.success("History pesanan berhasil dihapus!")
+                    wait(1)
+                    st.rerun()
+                    break
+            else:
+                st.error("ID Pesanan tidak ditemukan.")
+    else:
+        st.warning("Belum ada Pesanan")
 
 def vouchermaker():
     kode = st.text_input("Kode Voucher:")
