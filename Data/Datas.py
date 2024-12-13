@@ -10,7 +10,7 @@ produk = [
 ]
 
 accounts = [
-    {"username": "orang", "password": "1234"},
+    {"username": "pembeli", "password": "pembeli1"},
     {"username": "Sabrina", "password": "15240233"},
     {"username": "Putra", "password": "15240301"},
     {"username": "Valenvia", "password": "15240234"},
