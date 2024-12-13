@@ -2,6 +2,7 @@ import streamlit as st
 import PIL as Image
 import pandas as pd
 import datetime
+from io import BytesIO
 from random import randint as rng
 from time import sleep as wait
 from Data.Datas import accounts, adminaccounts, superadminaccounts, produk, vouchers, historypesananlist, adminchathistory
@@ -149,6 +150,18 @@ def historydelete():
                 st.error("ID Pesanan tidak ditemukan.")
     else:
         st.warning("Belum ada Pesanan")
+
+def downloadlist():
+    listfile = BytesIO()
+    pd.DataFrame(historypesananlist).to_excel(listfile, index=False)
+    listfile.seek(0)
+
+    st.download_button(
+        label = "Download List Pesanan",
+        data = listfile.getvalue(),
+        file_name = "ListPesanan.xlsx",
+        mime = "application/vnd.ms-excel"
+        )
 
 def vouchermaker():
     kode = st.text_input("Kode Voucher:")
