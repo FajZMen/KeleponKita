@@ -2,7 +2,6 @@ import streamlit as st
 import PIL as Image
 import pandas as pd
 import datetime
-import openpyxl as xl
 from io import BytesIO
 from random import randint as rng
 from time import sleep as wait
