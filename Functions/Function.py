@@ -114,6 +114,7 @@ def keranjangfunc():
         
         st.markdown("### Total Harga")
         st.write(f"Rp {hargadiskon:,}")
+        st.warning("Mohon pastikan email, no-HP, dan alamat sudah benar!. jika terlihat salah satu dari info ini tidak normal, maka pesanan tersebut akan dibatalkan!.")
 
         if st.button("Beli"):
             st.success("Pesanan sudah dibuat!, mohon tunggu info dari Admin")
