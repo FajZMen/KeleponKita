@@ -19,6 +19,7 @@ if not loggedin and not adminloggedin and not superadminlogin:
         st.title("Login")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
+        st.write("Untuk pembeli, silakan login dengan username 'pembeli' dan password 'pembeli1' ")
 
         if st.button("Login"):
             login(username, password)
