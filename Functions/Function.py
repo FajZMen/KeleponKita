@@ -223,6 +223,7 @@ def accountcreatortool(userinput, passinput, selectedtype):
         st.success("Admin Account created!")
     else:
         st.write("You didnt select the account type bruh")
+    st.warning("PLEASE NOTE that Accounts that is created this way will be DELETED on Website Reboot!.")
 
 def accountdeletortool(deluserinput, delselectedtype):
     if delselectedtype == "User Account":
