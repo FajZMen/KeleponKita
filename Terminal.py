@@ -1,7 +1,7 @@
 from time import sleep as wait
 import streamlit as st
 import pandas as pd
-from Functions.Function import sesi_inisilasi, tambah_ke_keranjang, login, katalogfunc, keranjangfunc, historypesanan, historydelete, vouchermaker, voucherdeleter, adminchat, accountbank, accountcreatortool, accountdeletortool
+from Functions.Function import sesi_inisilasi, tambah_ke_keranjang, login, katalogfunc, keranjangfunc, historypesanan, downloadlist, historydelete, vouchermaker, voucherdeleter, adminchat, accountbank, accountcreatortool, accountdeletortool
 from Data.Datas import produk, accounts, adminaccounts, superadminaccounts, historypesananlist, vouchers, adminchathistory
 sesi_inisilasi()
 loggedin = st.session_state.get("loggedin", False)
@@ -107,6 +107,7 @@ elif st.session_state.superadminlogin:
         with pestab[0]:
             if historypesananlist:
                 st.data_editor(historypesananlist, num_rows="dynamic")
+                downloadlist()
             else:
                 st.warning("Belum ada pesanan.")
         with pestab[1]:
