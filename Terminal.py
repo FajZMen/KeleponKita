@@ -143,6 +143,7 @@ elif st.session_state.superadminlogin:
             passinput = st.text_input("Enter the Account Password", type="password")
             if st.button("Create Account"):
                 accountcreatortool(userinput, passinput, selectedtype)
+            st.warning("PLEASE NOTE that Accounts that is created this way will be DELETED on Website Reboot!.")
         with tabs[1]:
             st.title("Account Deletion Tool")
             deluserinput = st.text_input("Enter Account Username to Delete")
