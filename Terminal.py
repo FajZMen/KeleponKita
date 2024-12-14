@@ -60,6 +60,7 @@ elif st.session_state.adminloggedin:
         with pestab[0]:
             if historypesananlist:
                 st.data_editor(historypesananlist, num_rows="dynamic")
+                downloadlist()
             else:
                 st.warning("Belum ada pesanan.")
         with pestab[1]:
