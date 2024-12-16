@@ -4,6 +4,7 @@ from PIL import Image
 historypesananlist = []
 vouchers = []
 adminchathistory = []
+supporthistory = []
 
 produk = [
     {"Nama": "Kelepon", "Harga": 5000, "Gambar": "Kelepon.png"},
