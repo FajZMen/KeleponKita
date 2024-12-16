@@ -1,8 +1,8 @@
 from time import sleep as wait
 import streamlit as st
 import pandas as pd
-from Functions.Function import sesi_inisilasi, tambah_ke_keranjang, login, katalogfunc, keranjangfunc, historypesanan, downloadlist, historydelete, vouchermaker, voucherdeleter, adminchat, accountbank, accountcreatortool, accountdeletortool
-from Data.Datas import produk, accounts, adminaccounts, superadminaccounts, historypesananlist, vouchers, adminchathistory
+from Functions.Function import sesi_inisilasi, tambah_ke_keranjang, login, katalogfunc, keranjangfunc, historypesanan, downloadlist, historydelete, vouchermaker, voucherdeleter, adminchat, accountbank, accountcreatortool, accountdeletortool, customersupport, deletesupportreport
+from Data.Datas import produk, accounts, adminaccounts, superadminaccounts, historypesananlist, vouchers, adminchathistory, supporthistory
 sesi_inisilasi()
 loggedin = st.session_state.get("loggedin", False)
 adminloggedin = st.session_state.get("adminloggedin", False)
@@ -12,23 +12,26 @@ dataaccess = st.session_state.get("databankaccess", False)
 if not loggedin and not adminloggedin and not superadminlogin:
     halamanlogin = st.sidebar.radio(
         "Halaman",
-        ["Login"]
+        ["Login", "Daftar"]
     )
     
     if halamanlogin == "Login":
         st.title("Login")
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
-        st.write("Untuk pembeli, silakan login dengan username 'pembeli' dan password 'pembeli1' ")
 
         if st.button("Login"):
             login(username, password)
+    
+    if halamanlogin == "Daftar":
+        st.title("Daftar")
+        st.warning("Fitur ini sedang In Development!")
 
 elif st.session_state.loggedin:
     st.sidebar.title(f"Hello {st.session_state.displayname}!")
     halamanuser = st.sidebar.radio(
         "Halaman User",
-        ["Katalog", "Keranjang"]
+        ["Katalog", "Keranjang", "Support"]
     )
 
     if st.sidebar.button("Logout"):
@@ -43,11 +46,20 @@ elif st.session_state.loggedin:
         st.title("Keranjang")
         keranjangfunc()
 
+    if halamanuser == "Support":
+        st.title("Support Center")
+        st.write("Disini, anda bisa meminta bantuan dari admin atau melaporkan Masalah-masalah di web!.")
+        customersupport()
+        if st.button("Refresh"):
+            st.rerun()
+        if supporthistory:
+            st.dataframe(supporthistory)
+
 elif st.session_state.adminloggedin:
     st.sidebar.title(f"Selamat Datang Admin {st.session_state.displayname}!")
     halamanadmin = st.sidebar.radio(
         "Halaman Admin",
-        ["Pesanan", "Vouchers", "Admin Chat", "Katalog", "Keranjang"]
+        ["Pesanan", "Vouchers", "Admin Chat", "Support Center", "Katalog", "Keranjang"]
     )
 
     if st.sidebar.button("Logout"):
@@ -82,6 +94,16 @@ elif st.session_state.adminloggedin:
             st.data_editor(adminchathistory, column_config={"Message": st.column_config.TextColumn(width="large")})
         else:
             st.warning("Belum ada chat.")
+    
+    if halamanadmin == "Support Center":
+        st.title("Support Center")
+        customersupport()
+        if st.button("Refresh"):
+            st.rerun()
+        if supporthistory:
+            st.dataframe(supporthistory)
+        else:
+            st.write("Belum ada report.")
 
     if halamanadmin == "Katalog":
         st.title("Menu KeleponKita")
@@ -95,7 +117,7 @@ elif st.session_state.superadminlogin:
     st.sidebar.title(f"Selamat Datang Developer {st.session_state.displayname}!")
     halamanspadmin = st.sidebar.radio(
         "Halaman Developer",
-        ["Pesanan", "Vouchers", "Admin Chat", "Dev Tools", "Account Bank", "Katalog", "Keranjang"]
+        ["Pesanan", "Vouchers", "Admin Chat", "Dev Tools", "Account Bank", "Support Center", "Katalog", "Keranjang"]
     )
 
     if st.sidebar.button("Logout"):
@@ -144,7 +166,7 @@ elif st.session_state.superadminlogin:
             passinput = st.text_input("Enter the Account Password", type="password")
             if st.button("Create Account"):
                 accountcreatortool(userinput, passinput, selectedtype)
-            st.warning("PLEASE NOTE that Accounts that is created this way will be DELETED on Website Reboot!.")
+            st.warning("NOTICE: Accounts created this way will be DELETED on Website Reboot!")
         with tabs[1]:
             st.title("Account Deletion Tool")
             deluserinput = st.text_input("Enter Account Username to Delete")
@@ -165,6 +187,20 @@ elif st.session_state.superadminlogin:
                     st.rerun()
                 else:
                     st.write("Wrong")
+        
+    if halamanspadmin == "Support Center":
+        st.title("Support Center")
+        scpage = st.tabs(["Reports", "Delete Reports"])
+        with scpage[0]:
+            customersupport()
+            if st.button("Refresh"):
+                st.rerun()
+            if supporthistory:
+                st.dataframe(supporthistory)
+            else:
+                st.write("Belum ada report.")
+        with scpage[1]:
+            deletesupportreport()
 
     if halamanspadmin == "Katalog":
         st.title("Menu KeleponKita")
