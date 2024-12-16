@@ -1,11 +1,12 @@
 import streamlit as st
 import PIL as Image
 import pandas as pd
+import openpyxl as xl
 import datetime
 from io import BytesIO
 from random import randint as rng
 from time import sleep as wait
-from Data.Datas import accounts, adminaccounts, superadminaccounts, produk, vouchers, historypesananlist, adminchathistory
+from Data.Datas import accounts, adminaccounts, superadminaccounts, produk, vouchers, historypesananlist, adminchathistory, supporthistory
 
 def sesi_inisilasi():
     if "loggedin" not in st.session_state:
@@ -34,6 +35,7 @@ def login(username, password):
         if account["username"] == username and account["password"] == password:
             st.session_state["loggedin"] = True
             st.session_state["displayname"] = username
+            st.session_state["Role"] = "User"
             st.success("Login berhasil!")
             st.rerun()
             return
@@ -114,7 +116,7 @@ def keranjangfunc():
         
         st.markdown("### Total Harga")
         st.write(f"Rp {hargadiskon:,}")
-        st.warning("Mohon pastikan email, no-HP, dan alamat sudah benar!. jika terlihat salah satu dari info ini tidak normal, maka pesanan tersebut akan dibatalkan!.")
+        st.warning("Pastikan alamat, nomor HP, dan email sudah benar!. Jika terlihat salah satu dari Info tersebut tidak normal, maka pesanan tersebut akan dibatalkan.")
 
         if st.button("Beli"):
             st.success("Pesanan sudah dibuat!, mohon tunggu info dari Admin")
@@ -243,3 +245,35 @@ def accountdeletortool(deluserinput, delselectedtype):
             st.error("Admin Account not found!")
     else:
         st.write("You didnt select the account type bruh")
+
+def customersupport():
+    supportchat = st.chat_input("Report bugs, questions, or anything here")
+    if supportchat:
+        supporthistory.append({f"ID" : rng(1, 9999), "Tanggal": {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}, "Role": {st.session_state["Role"]}, "User": {st.session_state.displayname}, "Message": supportchat})
+
+def deletesupportreport():
+    if supporthistory:
+        reportid = st.number_input("Masukkan ID Report yang akan dihapus", min_value=1, max_value=9999)
+        if st.button("Hapus Report"):
+            for rpd in supporthistory:
+                if rpd["ID"] == reportid:
+                    supporthistory.remove(rpd)
+                    st.success("Report berhasil dihapus!")
+                    wait(1)
+                    st.rerun()
+                    break
+            else:
+                st.error("ID Report tidak ditemukan.")
+        if st.button("Clear History Support Center"):
+            supporthistory.clear()
+            st.rerun()
+    else:
+        st.warning("Belum ada Report")
+
+def aboutus(): #Not used, idk why LMAO
+    st.title("About Us")
+    abouttabs = st.tabs(["Tentang Kami", "Members"])
+    with abouttabs[0]:
+        st.write("KeleponKita adalah sebuah platform yang menyediakan berbagai macam kebutuhan sehari-hari. KeleponKita memiliki berbagai macam produk yang")
+    with abouttabs[1]:
+        st.image("Images/KeleponKita.png")
