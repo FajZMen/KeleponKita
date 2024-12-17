@@ -53,7 +53,7 @@ elif st.session_state.loggedin:
         if st.button("Refresh"):
             st.rerun()
         if supporthistory:
-            st.dataframe(supporthistory)
+            st.dataframe(supporthistory, column_config={"Message": st.column_config.TextColumn(width="large")})
 
 elif st.session_state.adminloggedin:
     st.sidebar.title(f"Selamat Datang Admin {st.session_state.displayname}!")
@@ -101,7 +101,7 @@ elif st.session_state.adminloggedin:
         if st.button("Refresh"):
             st.rerun()
         if supporthistory:
-            st.dataframe(supporthistory)
+            st.dataframe(supporthistory, column_config={"Message": st.column_config.TextColumn(width="large")})
         else:
             st.write("Belum ada report.")
 
@@ -196,7 +196,7 @@ elif st.session_state.superadminlogin:
             if st.button("Refresh"):
                 st.rerun()
             if supporthistory:
-                st.dataframe(supporthistory)
+                st.dataframe(supporthistory, column_config={"Message": st.column_config.TextColumn(width="large")})
             else:
                 st.write("Belum ada report.")
         with scpage[1]:
