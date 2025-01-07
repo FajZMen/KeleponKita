@@ -6,15 +6,17 @@ import datetime
 from io import BytesIO
 from random import randint as rng
 from time import sleep as wait
-from Data.Datas import accounts, adminaccounts, superadminaccounts, produk, vouchers, historypesananlist, adminchathistory, supporthistory
+from Data.Datas import accounts, adminaccounts, superadminaccounts, bannedaccounts, accountscreated, produk, vouchers, historypesananlist, adminchathistory, supporthistory
 
-def sesi_inisilasi():
+def getstates():
     if "loggedin" not in st.session_state:
         st.session_state.loggedin = False
     if "adminloggedin" not in st.session_state:
         st.session_state.adminloggedin = False
     if "superadminlogin" not in st.session_state:
         st.session_state.superadminlogin = False
+    if "banned" not in st.session_state:
+        st.session_state.banned = False
     if "databankaccess" not in st.session_state:
         st.session_state.databankaccess = False
     if "keranjang" not in st.session_state:
@@ -28,15 +30,22 @@ def sesi_inisilasi():
     if "stok" not in st.session_state:
         st.session_state.stok = {  # Inisialisasi stok produk
             "Kelepon": 50,
+            "Mochi": 50,
     }
         
 def login(username, password):
+    for banacc in bannedaccounts:
+        if banacc["username"] == username:
+            st.session_state["banned"] = True
+            st.session_state["displayname"] = username
+            st.session_state["bannedreason"] = banacc["reason"]
+            st.rerun()
+            return
     for account in accounts:
         if account["username"] == username and account["password"] == password:
             st.session_state["loggedin"] = True
             st.session_state["displayname"] = username
             st.session_state["Role"] = "User"
-            st.success("Login berhasil!")
             st.rerun()
             return
     for adminaccount in adminaccounts:
@@ -44,7 +53,6 @@ def login(username, password):
             st.session_state["adminloggedin"] = True
             st.session_state["displayname"] = username
             st.session_state["Role"] = "Admin"
-            st.success("Login berhasil!")
             st.rerun()
             return
     for spadminacc in superadminaccounts:
@@ -52,11 +60,29 @@ def login(username, password):
             st.session_state["superadminlogin"] = True
             st.session_state["displayname"] = username
             st.session_state["Role"] = "Developer"
-            st.success("Login berhasil!")
             st.rerun()
             return
     else:
         st.error("Username atau password salah.")
+
+def register():
+    st.title("Register")
+    regname = st.text_input("Nama akun")
+    regpass = st.text_input("Password akun", type="password")
+    if st.button("Register"):
+        if not regname or not regpass:
+            st.error("Username dan password harus diisi!")
+        else:
+            for exacc in accounts:
+                if exacc["username"] == regname:
+                    st.error("Username sudah ada, mohon gunakan Username yang lain!")
+                    break
+
+                else:
+                    accounts.append({"username": regname, "password": regpass})
+                    st.success("Akun berhasil dibuat!")
+                    wait(1)
+                    st.rerun()
 
 def tambah_ke_keranjang(nama, harga, jumlah, stok):
     if jumlah > 0 and jumlah <= stok:
@@ -208,11 +234,11 @@ def adminchat():
 def accountbank():
     selectedlist = st.selectbox("Account List", ["User Accounts", "Admin Accounts", "Super Admin Accounts"])
     if selectedlist == "User Accounts":
-        st.data_editor(accounts, num_rows="dynamic")
+        st.dataframe(accounts)
     elif selectedlist == "Admin Accounts":
-        st.data_editor(adminaccounts, num_rows="dynamic")
+        st.dataframe(adminaccounts)
     elif selectedlist == "Super Admin Accounts":
-        st.data_editor(superadminaccounts, num_rows="dynamic")
+        st.dataframe(superadminaccounts)
     else:
         st.write("Nothing to show")
 
@@ -237,7 +263,11 @@ def accountdeletortool(deluserinput, delselectedtype):
             st.error("User Account not found!")
     elif delselectedtype == "Admin Account":
         for auser in adminaccounts:
-            if deluserinput == auser["adminusername"]:
+            if deluserinput == "Radit" or deluserinput == "Tubagus":
+                st.error("This Account cannot be Deleted!")
+                break
+
+            elif deluserinput == auser["adminusername"]:
                 adminaccounts.remove(auser)
                 st.success("Admin Account deleted!")
                 break
@@ -247,7 +277,7 @@ def accountdeletortool(deluserinput, delselectedtype):
         st.write("You didnt select the account type bruh")
 
 def customersupport():
-    supportchat = st.chat_input("Report bugs, questions, or anything here")
+    supportchat = st.chat_input("Report bugs, Ask Help, or anything here")
     if supportchat:
         supporthistory.append({f"ID" : rng(1, 9999), "Tanggal": {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}, "Role": {st.session_state["Role"]}, "User": {st.session_state.displayname}, "Message": supportchat})
 
@@ -270,7 +300,40 @@ def deletesupportreport():
     else:
         st.warning("Belum ada Report")
 
-def aboutus(): #Not used, idk why LMAO
+def banaccounts(banuserinput, reason):
+    for acctoban in accounts:
+        if banuserinput == acctoban["username"]:
+            bannedaccounts.append({"username": banuserinput, "reason": reason})
+            st.success("Account Banned!")
+            break
+    else:
+        st.error("Account not found.")
+
+def unbanaccount(unbanuserinput):
+    for unban in bannedaccounts:
+        if unbanuserinput == unban["username"]:
+            bannedaccounts.remove(unban)
+            st.success("Account Unbanned!")
+            break
+    else:
+        st.error("Account not found.")
+
+def stockeditor(nama): #Not Done
+    st.title("Stock Editor")
+    selecstok = st.selectbox("Pilih Produk", ["Kelepon", "Thing"])
+    if selecstok == "Kelepon":
+        st.write(f"Stock Left: {st.session_state.stok[nama]}")
+    if selecstok == "Thing":
+        st.write("bruh")
+    
+    if selecstok:
+        st.number_input(f"Edit Stock untuk {selecstok}", min_value=0, step=1, key=f"stok-{selecstok}")
+        if st.button(f"Edit {selecstok}"):
+            st.write("Ok")
+    
+    st.warning("NOTE: This feature is still in BETA, May not work as intended!.") 
+
+def aboutusinfo(): #Not used for now XD
     st.title("About Us")
     abouttabs = st.tabs(["Tentang Kami", "Members"])
     with abouttabs[0]:
