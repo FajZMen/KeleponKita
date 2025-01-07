@@ -22,13 +22,13 @@ accounts = [
 ]
 
 adminaccounts = [
-    {"adminusername": "Radit", "adminpassword": "radit15240565"},
-    {"adminusername": "Tubagus", "adminpassword": "bagus15240157"},
+    {"adminusername": "Radit", "adminpassword": "raditiya15240565"},
+    {"adminusername": "Tubagus", "adminpassword": "tubagusgus15240157"},
 ]
 
 superadminaccounts = [
     {"superadminusername": "FajZ", "superadminpassword": "zstleader222"},
-    {"superadminusername": "Fauzan", "superadminpassword": "ojan15240092"},
+    {"superadminusername": "Fauzan", "superadminpassword": "ozan15240092"},
 ]
 
 def updatehistory(): #Dont ask why its here, it's just there.
